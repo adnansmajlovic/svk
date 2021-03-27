@@ -1,0 +1,111 @@
+/* @import url("https://fonts.googleapis.com/css?family=Lato|Roboto+Slab"); */
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500|Roboto:300,400,500&display=swap");
+
+
+body {
+  font-family: 'Montserrat';
+  margin: 0;
+  height: 100%;
+      font-weight: 300;
+  font-family: Montserrat;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--body-color);
+  background-color: var(--body-background-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 0.5em 0;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  font-family: menlo, inconsolata, monospace;
+  font-size: calc(1em - 2px);
+  color: #555;
+  background-color: #f0f0f0;
+  padding: 0.2em 0.4em;
+  border-radius: 2px;
+}
+
+:root {
+  --success-color: #1a936f;
+  --failure-color: #e63946;
+  --card-background-color: #f1faee;
+  --disabled-color: #adc2cd;
+  --status-msg-background-color: #5388a7;
+  /* --nav-background-color: #1d3557; */
+  --nav-background-color-dev: #4a194c;
+  --nav-background-color-test: #f3a32f;
+  --nav-background-color-prod: #1d3557;
+
+  --subnav-background-color: #274769;
+  /* #63889a; */
+  /* #264653;*/
+  --subnav-color: whitesmoke;
+  --nav-color: whitesmoke;
+  --body-background-color: #d6e5e3;
+  --body-color: #333;
+  --grayed-out-color: #819ea2;
+  /* --listBackground is used in Select component */
+  --listBackground: #f1faee;
+  --inputFontSize: 16px;
+}
+
+.successMsgBox {
+  background-color: var(--status-msg-background-color);
+  color: whitesmoke;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.3em;
+  border-radius: 0.5em;
+  font-size: 1.5em;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 5px;
+  margin: 5px;
+  background-color: var(--card-background-color);
+}
+
+.card-text-small {
+  font-size: 0.85rem;
+}
+
+.grayed-out {
+  color: var(--grayed-out-color);
+}
+
+@media (min-width: 400px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+.select-themed {
+  /* --border: 3px solid blue; */
+  --borderRadius: 5px;
+  --placeholderColor: var(--body-color);
+  /* border-bottom: 2px solid #ccc; */
+  /* border-radius: 3px 3px 0 0; */
+  background: var(--listBackground);
+  /* padding: 0.15rem 0.25rem; */
+  transition: border-color 0.1s ease-out;
+}
