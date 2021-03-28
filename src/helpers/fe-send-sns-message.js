@@ -1,4 +1,5 @@
-import amplify from '../stores/amplify';
+// import amplify from '../stores/amplify';
+import amplify from '$stores/amplify';
 
 // import Lambda from 'aws-sdk/clients/lambda'; // npm install aws-sdk
 
@@ -13,40 +14,40 @@ const REGEX = /.*-(\w+)/;
 const env = aws_exports.aws_content_delivery_bucket.match(REGEX)[1];
 
 unsubscribeAmplify = amplify.subscribe(async (amp) => {
-  if (amp) {
-    Amplify = amp;
-    console.log({ Amplify });
-  }
+	if (amp) {
+		Amplify = amp;
+		console.log({ Amplify });
+	}
 });
 unsubscribeAPI = amplify.subscribeAPI(async (amp) => {
-  if (amp) {
-    API = amp;
-    console.log({ API });
-  }
+	if (amp) {
+		API = amp;
+		console.log({ API });
+	}
 });
 
 unsubscribeAuth = amplify.subscribeAuth(async (amp) => {
-  if (amp) {
-    Auth = amp;
-    console.log({ Auth });
-  }
+	if (amp) {
+		Auth = amp;
+		console.log({ Auth });
+	}
 });
 // a.s.
 export async function sendSNS(msg) {
-  const apiName = 'marsconnectedSNS';
-  const path = '/message';
-  const myInit = {
-    body: {},
-    headers: {}, // optional
-  };
+	const apiName = 'marsconnectedSNS';
+	const path = '/message';
+	const myInit = {
+		body: {},
+		headers: {} // optional
+	};
 
-  // a.s. "destructure" msg object into body
-  myInit.body = msg;
+	// a.s. "destructure" msg object into body
+	myInit.body = msg;
 
-  console.log('function sendSNS:', { msg });
+	console.log('function sendSNS:', { msg });
 
-  const res = await API.post(apiName, path, myInit);
-  console.log('sns message sent:', { res });
+	const res = await API.post(apiName, path, myInit);
+	console.log('sns message sent:', { res });
 }
 
 // export async function sendSnsDirect(msg) {

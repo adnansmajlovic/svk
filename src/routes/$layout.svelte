@@ -30,7 +30,6 @@
 	 * is running in the browser or on the server
 	 * `dev` is `true` in development mode, `false` in production
 	 */
-	// import Amplify, { API, Auth, graphqlOperation, Storage } from 'aws-amplify';
 
 	import { amp, browser, dev } from '$app/env';
 	import { goto } from '$app/navigation';
@@ -39,31 +38,28 @@
 	import { writable } from 'svelte/store';
 	import Nav from '$lib/Nav.svelte';
 	import awsconfig from '../aws-exports';
-	import amplifyStore from '../stores/amplify';
+	import amplifyStore from '$stores/amplify';
 	import { checkUser } from '$lib/Auth/aws';
-	import authUser from '../stores/auth.js';
+	import authUser from '$stores/auth.js';
+
+	import Amplify, { API, Auth, graphqlOperation, Storage } from 'aws-amplify';
+	Amplify.configure(awsconfig);
 
 	let segment;
-
-	// let store = writable({});
-	// setContext('store', store);
-
-	// $: user = $session?.context?.user || null;
-	// $: console.log({ session, user });
-
 	let unsubscribe;
 	let cognitoUser;
 
-	$: if (cognitoUser) console.log('layout, yes cog user:', { cognitoUser });
-
 	$: if (cognitoUser) {
+		console.log('layout, cognito user:', { cognitoUser });
 		$session.user.email = cognitoUser.attributes.email;
 		console.log({ session });
 		console.log('session.user', $session.user);
+
 		/** a.s. this example below is set in src/setup/index.js
 		 * renamed to src/hooks/index.js
 		 */
 		console.log('session.adnanTest', $session.adnanTest);
+
 		goto('/');
 	}
 
@@ -76,27 +72,24 @@
 			 * or if (browser) {}
 			 */
 
-			// const { default: Amplify } = await import('@aws-amplify/core');
-			// const Auth = await import('@aws-amplify/auth');
-			// const API = await import('@aws-amplify/api');
-			// const graphqlOperation = await import('@aws-amplify/api-graphql');
-
 			/**
-			 * Get Amplify
+			 * Get Amplify - no need for this anymore
 			 */
-			const [Amplify, Auth, API, graphqlOperation, Storage] = await Promise.all([
-				import('@aws-amplify/core'),
-				import('@aws-amplify/auth'),
-				import('@aws-amplify/api'),
-				import('@aws-amplify/api-graphql'),
-				import('@aws-amplify/storage')
-			]);
+			// const [Amplify, Auth, API, graphqlOperation, Storage] = await Promise.all([
+			// 	import('@aws-amplify/core'),
+			// 	import('@aws-amplify/auth'),
+			// 	import('@aws-amplify/api'),
+			// 	import('@aws-amplify/api-graphql'),
+			// 	import('@aws-amplify/storage')
+			// ]);
 
 			// configure amplify
-			Amplify.default.configure({ ...awsconfig });
-			// Amplify.default.configure({ ...awsconfig, ssr: true });
+			// Amplify.default.configure(awsconfig);
 
-			// save values in stores
+			/**
+			 * Store Amplify values for other components and
+			 * pages to use
+			 */
 			amplifyStore.setAwsAmplify(Amplify);
 			amplifyStore.setAwsAPI(API);
 			amplifyStore.setAwsAuth(Auth);
@@ -132,3 +125,9 @@
 <main>
 	<slot />
 </main>
+
+<style global>
+	div {
+		color: olivedrab;
+	}
+</style>

@@ -1,6 +1,5 @@
-// Amplify.configure(aws_exports);
-
-import amplify from '../../stores/amplify';
+// import amplify from '../../stores/amplify';
+import amplify from '$stores/amplify';
 
 let unsubscribeAmplify, unsubscribeAuth;
 let Amplify, Auth;
@@ -19,7 +18,7 @@ unsubscribeAuth = amplify.subscribeAuth(async (amp) => {
 });
 
 export async function checkUser() {
-	const currentUser = await Auth.default.currentAuthenticatedUser({
+	const currentUser = await Auth.currentAuthenticatedUser({
 		// a.s. bypassCache: true // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
 	});
 
@@ -32,7 +31,7 @@ export async function checkUser() {
 
 export async function signOut() {
 	try {
-		await Auth.default.signOut();
+		await Auth.signOut();
 	} catch (error) {
 		console.log(error);
 	}
@@ -41,7 +40,7 @@ export async function signOut() {
 // a.s. use email to signup
 export async function SignUp(email, password) {
 	try {
-		const user = await Auth.default.signUp({
+		const user = await Auth.signUp({
 			username: email,
 			password,
 			attributes: {
@@ -58,7 +57,7 @@ export async function SignUp(email, password) {
 
 export async function SignIn(username, password, newPassword = null) {
 	try {
-		const user = await Auth.default.signIn(username, password);
+		const user = await Auth.signIn(username, password);
 		// console.log({
 		//   user,
 		// });
@@ -67,7 +66,7 @@ export async function SignIn(username, password, newPassword = null) {
 			// and then trigger the following function with a button click
 			const code = getCodeFromUserInput();
 			// If MFA is enabled, sign-in should be confirmed with the confirmation code
-			const loggedUser = await Auth.default.confirmSignIn(
+			const loggedUser = await Auth.confirmSignIn(
 				user, // Return object from Auth.signIn()
 				code, // Confirmation code
 				mfaType // MFA Type e.g. SMS_MFA, SOFTWARE_TOKEN_MFA
@@ -86,7 +85,7 @@ export async function SignIn(username, password, newPassword = null) {
 			// });
 
 			if (newPassword) {
-				const loggedUser = await Auth.default.completeNewPassword(
+				const loggedUser = await Auth.completeNewPassword(
 					user, // the Cognito User Object
 					newPassword, // the new password
 					// OPTIONAL, the required attributes
@@ -105,7 +104,7 @@ export async function SignIn(username, password, newPassword = null) {
 			// This happens when the MFA method is TOTP
 			// The user needs to setup the TOTP before using it
 			// More info please check the Enabling MFA part
-			Auth.default.setupTOTP(user);
+			Auth.setupTOTP(user);
 		} else {
 			// The user directly signs in
 
@@ -141,7 +140,7 @@ export async function SignIn(username, password, newPassword = null) {
 
 export async function ConfirmSignUp(email, confirmationCode) {
 	try {
-		return await Auth.default.confirmSignUp(email, confirmationCode);
+		return await Auth.confirmSignUp(email, confirmationCode);
 	} catch (error) {
 		console.log(error);
 	}

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" href="global.css">
+	<link rel="stylesheet" href="global.css" />
 
 	<link rel="icon" href="/favicon.ico" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,10 +17,16 @@
 </html>
 <!-- https://github.com/aws/aws-amplify/issues/678 fix: -->
 <script>
-	if (global === undefined) {
+
+	const isBrowser = () => typeof window !== 'undefined';
+	const isGlobal = () => typeof global !== 'undefined';
+
+	// https://github.com/aws-amplify/amplify-js/issues/7499#issuecomment-804386820
+	var exports = {};
+
+	if (!isGlobal() && isBrowser()) {
 		var global = window;
 	}
-	// https://github.com/aws-amplify/amplify-js/issues/7499#issuecomment-804386820
-	var exports = {}
+
 </script>
 <!-- https://github.com/aws/aws-amplify/issues/678 fix end-->

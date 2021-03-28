@@ -8,12 +8,11 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
+	"dependencies": {
+		"aws-amplify": "^3.3.8",
+		"aws-sdk": "2.874.0"
+	},
 	"devDependencies": {
-		"@aws-amplify/api": "^3.2.27",
-		"@aws-amplify/api-graphql": "^1.2.27",
-		"@aws-amplify/auth": "^3.4.27",
-		"@aws-amplify/core": "^3.8.19",
-		"@aws-amplify/storage": "^3.3.27",
 		"@lukeed/uuid": "^2.0.0",
 		"@rollup/plugin-json": "^4.1.0",
 		"@sveltejs/adapter-node": "next",
@@ -22,9 +21,12 @@
 		"eslint": "^7.22.0",
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-plugin-svelte3": "^3.1.0",
+		"postcss": "^8.2.8",
+		"postcss-load-config": "^3.0.1",
 		"prettier": "~2.2.1",
 		"prettier-plugin-svelte": "^2.2.0",
 		"svelte": "^3.29.0",
+		"svelte-preprocess": "^4.7.0",
 		"vite": "^2.1.0"
 	},
 	"type": "module",

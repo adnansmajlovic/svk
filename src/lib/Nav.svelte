@@ -1,168 +1,157 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import amplifyStore from '../stores/amplify';
-  import isAdminStore from '../stores/admin.js';
-  import authUser from '../stores/auth.js';
+	import { onMount, onDestroy } from 'svelte';
+	// import amplifyStore from '../stores/amplify';
+	// import isAdminStore from '../stores/admin.js';
+	// import authUser from '../stores/auth.js';
 
-  import { page, session } from '$app/stores';
+	import amplifyStore from '$stores/amplify';
+	import isAdminStore from '$stores/admin.js';
+	import authUser from '$stores/auth.js';
 
-  import User from '$lib/Auth/User.svelte';
-  import { checkUser, signOut } from './Auth/aws';
+	import { page, session } from '$app/stores';
 
-  export let segment;
+	import User from '$lib/Auth/User.svelte';
+	import { checkUser, signOut } from './Auth/aws';
 
-  let unsubscribe,
-    unsubscribeAmplify,
-    unsubscribeAPI,
-    unsubscribeAuth,
-    unsubscribeGraphqlOperation,
-    unsubscribeStorage;
+	export let segment;
 
-  let Amplify, Auth, API, graphqlOperation, Storage;
+	let unsubscribe,
+		unsubscribeAmplify,
+		unsubscribeAPI,
+		unsubscribeAuth,
+		unsubscribeGraphqlOperation,
+		unsubscribeStorage;
 
-  let cognitoUser = null;
-  let isAdmin = false;
-  let isSuperAdmin = false;
+	let Amplify, Auth, API, graphqlOperation, Storage;
 
-  $: if (cognitoUser) {
-    console.log('nav, yes cog user:', { cognitoUser });
+	let cognitoUser = null;
+	let isAdmin = false;
+	let isSuperAdmin = false;
 
-    const groups =
-      cognitoUser.signInUserSession.accessToken.payload['cognito:groups'];
-    isAdmin = groups && !!groups.find((el) => el === 'Admin');
-    isAdminStore.setIsAdmin(isAdmin);
-  }
+	$: if (cognitoUser) {
+		console.log('nav, yes cog user:', { cognitoUser });
 
-  $: ({ user } = $session);
-  $: console.log('nav:', { user });
-  $: console.log({ session });
+		const groups = cognitoUser.signInUserSession.accessToken.payload['cognito:groups'];
+		isAdmin = groups && !!groups.find((el) => el === 'Admin');
+		isAdminStore.setIsAdmin(isAdmin);
+	}
 
-  onMount(async () => {
-    unsubscribe = authUser.subscribe((user) => {
-      if (user) {
-        cognitoUser = user;
-      }
-    });
+	$: ({ user } = $session);
+	$: console.log('nav:', { user });
+	$: console.log({ session });
 
-    unsubscribeAmplify = amplifyStore.subscribe(async (amp) => {
-      if (amp) {
-        Amplify = amp;
-        console.log({ Amplify });
-      }
-    });
-    unsubscribeAPI = amplifyStore.subscribeAPI(async (amp) => {
-      if (amp) {
-        API = amp;
-        console.log({ API });
-      }
-    });
+	onMount(async () => {
+		unsubscribe = authUser.subscribe((user) => {
+			if (user) {
+				cognitoUser = user;
+			}
+		});
 
-    unsubscribeAuth = amplifyStore.subscribeAuth(async (amp) => {
-      if (amp) {
-        Auth = amp;
-        console.log('insta auth', { Auth });
-      }
-    });
+		unsubscribeAmplify = amplifyStore.subscribe(async (amp) => {
+			if (amp) {
+				Amplify = amp;
+				console.log({ Amplify });
+			}
+		});
+		unsubscribeAPI = amplifyStore.subscribeAPI(async (amp) => {
+			if (amp) {
+				API = amp;
+				console.log({ API });
+			}
+		});
 
-    unsubscribeGraphqlOperation = amplifyStore.subscribeGQL(async (gql) => {
-      if (gql) {
-        graphqlOperation = gql;
+		unsubscribeAuth = amplifyStore.subscribeAuth(async (amp) => {
+			if (amp) {
+				Auth = amp;
+				console.log('insta auth', { Auth });
+			}
+		});
 
-        console.log({ gql });
-      }
-    });
+		unsubscribeGraphqlOperation = amplifyStore.subscribeGQL(async (gql) => {
+			if (gql) {
+				graphqlOperation = gql;
 
-    unsubscribeStorage = amplifyStore.subscribeStorage(async (amp) => {
-      if (amp) {
-        Storage = amp;
-      }
-    });
+				console.log({ gql });
+			}
+		});
 
-    // if (!cognitoUser) {
-    //   console.log('nav: !cognitoUser');
-    //   const res = await checkUser();
-    //   authUser.setauthUser(res);
-    //   const groups =
-    //     res.signInUserSession.accessToken.payload['cognito:groups'];
-    //   isAdmin = groups && !!groups.find((el) => el === 'Admin');
-    //   isAdminStore.setIsAdmin(isAdmin);
+		unsubscribeStorage = amplifyStore.subscribeStorage(async (amp) => {
+			if (amp) {
+				Storage = amp;
+			}
+		});
 
-    //   // const res = checkUser();
-    //   // if (res) {
-    //   //   res.then((value) => {
-    //   //     authUser.setauthUser(value);
-    //   //     const groups =
-    //   //       value.signInUserSession.accessToken.payload['cognito:groups'];
-    //   //     isAdmin = groups && !!groups.find((el) => el === 'Admin');
-    //   //     isAdminStore.setIsAdmin(isAdmin);
-    //   //   });
-    //   // }
-    // } else {
-    //   const groups =
-    //     user.signInUserSession.accessToken.payload['cognito:groups'];
-    //   isAdmin = groups && !!groups.find((el) => el === 'Admin');
-    //   isAdminStore.setIsAdmin(isAdmin);
-    // }
-  });
+		// if (!cognitoUser) {
+		//   console.log('nav: !cognitoUser');
+		//   const res = await checkUser();
+		//   authUser.setauthUser(res);
+		//   const groups =
+		//     res.signInUserSession.accessToken.payload['cognito:groups'];
+		//   isAdmin = groups && !!groups.find((el) => el === 'Admin');
+		//   isAdminStore.setIsAdmin(isAdmin);
 
-  onDestroy(() => {
-    // if (createAppListener) createAppListener.unsubscribe();
-    // if (updateAppListener) updateAppListener.unsubscribe();
-    // if (deleteAppListener) deleteAppListener.unsubscribe();
+		//   // const res = checkUser();
+		//   // if (res) {
+		//   //   res.then((value) => {
+		//   //     authUser.setauthUser(value);
+		//   //     const groups =
+		//   //       value.signInUserSession.accessToken.payload['cognito:groups'];
+		//   //     isAdmin = groups && !!groups.find((el) => el === 'Admin');
+		//   //     isAdminStore.setIsAdmin(isAdmin);
+		//   //   });
+		//   // }
+		// } else {
+		//   const groups =
+		//     user.signInUserSession.accessToken.payload['cognito:groups'];
+		//   isAdmin = groups && !!groups.find((el) => el === 'Admin');
+		//   isAdminStore.setIsAdmin(isAdmin);
+		// }
+	});
 
-    // if (unsubscribe) unsubscribe();
-    // if (unsubscribeAdmin) unsubscribeAdmin();
+	onDestroy(() => {
+		// if (createAppListener) createAppListener.unsubscribe();
+		// if (updateAppListener) updateAppListener.unsubscribe();
+		// if (deleteAppListener) deleteAppListener.unsubscribe();
 
-    if (unsubscribeAmplify) unsubscribeAmplify();
-    if (unsubscribeAPI) unsubscribeAPI();
-    if (unsubscribeAuth) unsubscribeAuth();
-    if (unsubscribeGraphqlOperation) unsubscribeGraphqlOperation();
-    if (unsubscribeStorage) unsubscribeStorage();
-  });
+		// if (unsubscribe) unsubscribe();
+		// if (unsubscribeAdmin) unsubscribeAdmin();
 
-  function handleSignOut() {
-    cognitoUser = null;
-    isAdmin = null;
+		if (unsubscribeAmplify) unsubscribeAmplify();
+		if (unsubscribeAPI) unsubscribeAPI();
+		if (unsubscribeAuth) unsubscribeAuth();
+		if (unsubscribeGraphqlOperation) unsubscribeGraphqlOperation();
+		if (unsubscribeStorage) unsubscribeStorage();
+	});
 
-    console.log('signout');
+	function handleSignOut() {
+		cognitoUser = null;
+		isAdmin = null;
 
-    signOut();
-    authUser.setauthUser(null);
-  }
+		console.log('signout');
+
+		signOut();
+		authUser.setauthUser(null);
+	}
 </script>
 
 <nav class="nav-dev">
-  <ul>
-    <li>
-      <a aria-current={$page.path === '/' ? 'page' : undefined} href=".">
-        home
-      </a>
-    </li>
-    <li>
-      <a
-        aria-current={$page.path === '/about' ? 'page' : undefined}
-        href="about"
-      >
-        about
-      </a>
-    </li>
-    <li>
-      <a aria-current={$page.path === '/two' ? 'page' : undefined} href="two">
-        two
-      </a>
-    </li>
-    <li>
-      <a
-        aria-current={$page.path === '/three' ? 'page' : undefined}
-        href="three"
-      >
-        three
-      </a>
-    </li>
+	<ul>
+		<li>
+			<a aria-current={$page.path === '/' ? 'page' : undefined} href="."> home </a>
+		</li>
+		<li>
+			<a aria-current={$page.path === '/about' ? 'page' : undefined} href="about"> about </a>
+		</li>
+		<li>
+			<a aria-current={$page.path === '/two' ? 'page' : undefined} href="two"> two </a>
+		</li>
+		<li>
+			<a aria-current={$page.path === '/three' ? 'page' : undefined} href="three"> three </a>
+		</li>
 
-    <!-- for the blog link, we're using rel=prefetch so that Sapper prefetches
+		<!-- for the blog link, we're using rel=prefetch so that Sapper prefetches
 		     the blog data when we hover over the link or tap it on a touchscreen -->
-    <!-- <li>
+		<!-- <li>
       <a
         rel="prefetch"
         aria-current={segment === 'blog' ? 'page' : undefined}
@@ -171,111 +160,104 @@
       </a>
     </li> -->
 
-    <li style="float:right;">
-      <User on:signOut={handleSignOut} />
-    </li>
-  </ul>
+		<li style="float:right;">
+			<User on:signOut={handleSignOut} />
+		</li>
+	</ul>
 </nav>
 
 {#if isAdmin}
-  <div class="subnav">
-    <ul>
-      {#if isSuperAdmin}
-        <li>
-          <a
-            aria-current={segment === 'cognito' ? 'page' : undefined}
-            href="cognito"
-          >
-            cognito
-          </a>
-        </li>
-      {/if}
+	<div class="subnav">
+		<ul>
+			{#if isSuperAdmin}
+				<li>
+					<a aria-current={segment === 'cognito' ? 'page' : undefined} href="cognito"> cognito </a>
+				</li>
+			{/if}
 
-      <li>
-        <a aria-current={segment === 'lngs' ? 'page' : undefined} href="lngs">
-          languages
-        </a>
-      </li>
-      <li class="admin">Admin Panel</li>
-    </ul>
-  </div>
+			<li>
+				<a aria-current={segment === 'lngs' ? 'page' : undefined} href="lngs"> languages </a>
+			</li>
+			<li class="admin">Admin Panel</li>
+		</ul>
+	</div>
 {/if}
 
 <style>
-  nav {
-    border-bottom: 1px solid rgba(255, 62, 0, 0.1);
-    font-weight: 400;
-    padding: 0 1em;
-    background-color: var(--nav-background-color-prod);
-    color: var(--nav-color);
-  }
-  .nav-dev {
-    background-color: var(--nav-background-color-dev);
-  }
+	nav {
+		border-bottom: 1px solid rgba(255, 62, 0, 0.1);
+		font-weight: 400;
+		padding: 0 1em;
+		background-color: var(--nav-background-color-prod);
+		color: var(--nav-color);
+	}
+	.nav-dev {
+		background-color: var(--nav-background-color-dev);
+	}
 
-  .nav-test {
-    background-color: var(--nav-background-color-test);
-  }
+	.nav-test {
+		background-color: var(--nav-background-color-test);
+	}
 
-  .nav-master {
-    background-color: var(--nav-background-color-prod);
-  }
+	.nav-master {
+		background-color: var(--nav-background-color-prod);
+	}
 
-  ul {
-    margin: 0;
-    padding: 0;
-  }
+	ul {
+		margin: 0;
+		padding: 0;
+	}
 
-  /* clearfix */
-  ul::after {
-    content: '';
-    display: block;
-    clear: both;
-  }
+	/* clearfix */
+	ul::after {
+		content: '';
+		display: block;
+		clear: both;
+	}
 
-  li {
-    display: block;
-    float: left;
-  }
+	li {
+		display: block;
+		float: left;
+	}
 
-  [aria-current] {
-    position: relative;
-    display: inline-block;
-  }
+	[aria-current] {
+		position: relative;
+		display: inline-block;
+	}
 
-  [aria-current]::after {
-    position: absolute;
-    content: '';
-    width: calc(100% - 1em);
-    height: 2px;
-    background-color: rgb(255, 62, 0);
-    display: block;
-    bottom: -1px;
-  }
+	[aria-current]::after {
+		position: absolute;
+		content: '';
+		width: calc(100% - 1em);
+		height: 2px;
+		background-color: rgb(255, 62, 0);
+		display: block;
+		bottom: -1px;
+	}
 
-  a {
-    text-decoration: none;
-    padding: 1em 0.5em;
-    display: block;
-  }
+	a {
+		text-decoration: none;
+		padding: 1em 0.5em;
+		display: block;
+	}
 
-  /* a.s. subnav */
-  /* The subnavigation menu */
-  .subnav {
-    /* float: left;
+	/* a.s. subnav */
+	/* The subnavigation menu */
+	.subnav {
+		/* float: left;
     overflow: hidden; */
-    border-bottom: 1px solid rgba(255, 62, 0, 0.1);
-    font-weight: 300;
-    padding: 0 1em;
-    background-color: var(--subnav-background-color);
-    color: var(--subnav-color);
-  }
+		border-bottom: 1px solid rgba(255, 62, 0, 0.1);
+		font-weight: 300;
+		padding: 0 1em;
+		background-color: var(--subnav-background-color);
+		color: var(--subnav-color);
+	}
 
-  .admin {
-    text-align: center;
-    padding: 1em 0.5em;
-    float: right;
-    font-weight: 800;
-    color: #e9c46a;
-  }
+	.admin {
+		text-align: center;
+		padding: 1em 0.5em;
+		float: right;
+		font-weight: 800;
+		color: #e9c46a;
+	}
 </style>
