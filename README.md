@@ -1,3 +1,7 @@
+# SSR Version updated on July 12, 2021
+
+[SvelteKit + AWS Amplify + SSR](https://github.com/adnansmajlovic/svk-amplify-ssr)
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
